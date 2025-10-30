@@ -1,7 +1,11 @@
 from flask import Flask, jsonify
-import requests
+import requests, os
 
 app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return jsonify({"status": "ok", "message": "NSE proxy is running"})
 
 @app.route("/nse/<symbol>")
 def get_chain(symbol):
@@ -16,7 +20,9 @@ def get_chain(symbol):
         data = r.json()
         return jsonify(data)
     except Exception as e:
-        return jsonify({"error": str(e)})
-        
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
